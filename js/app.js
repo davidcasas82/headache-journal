@@ -182,6 +182,7 @@ function resetForm() {
   $("occurredOn").value = todayISO();
   $("occurredAt").value = nowHM();
   $("durationHours").value = "";
+  $("sleepHours").value = "";
   $("symptomNotes").value = "";
   $("cycleDay").value = "";
   $("food").value = "";
@@ -208,6 +209,7 @@ function fillForm(entry) {
   $("occurredAt").value = entry.occurredAt || "";
   const mins = Number(entry.durationMinutes) || 0;
   $("durationHours").value = mins ? hoursFromMinutes(mins) : "";
+  $("sleepHours").value = entry.sleepHours == null ? "" : String(entry.sleepHours);
   $("symptomNotes").value = entry.symptomNotes || "";
   $("cycleDay").value = entry.cycleDay ?? "";
   $("food").value = entry.food || "";
@@ -243,6 +245,7 @@ function formPayload() {
     symptoms: [...document.querySelectorAll("#symptomChecks input:checked")].map((el) => el.value),
     symptomNotes: $("symptomNotes").value,
     durationMinutes,
+    sleepHours: $("sleepHours").value === "" ? null : Number($("sleepHours").value),
     cycleDay: $("cycleDay").value === "" ? null : Number($("cycleDay").value),
     food: $("food").value,
     waterAmount: waterRaw === "" ? null : Number(waterRaw),
@@ -279,6 +282,7 @@ function renderHistory() {
     const when = `${fmtDate(entry.occurredOn)}${entry.occurredAt ? ` · ${entry.occurredAt}` : ""}`;
     const bits = [];
     if (entry.durationMinutes) bits.push(durationLabel(entry.durationMinutes));
+    if (entry.sleepHours != null) bits.push(`${sleepLabel(entry.sleepHours)} sleep`);
     if (entry.symptoms?.length) bits.push(entry.symptoms.map(symptomLabel).join(", "));
     li.innerHTML = `
       <div class="history-item">
@@ -305,6 +309,11 @@ function durationLabel(mins) {
   return Number(h) === 1 ? "1 hour" : `${h} hours`;
 }
 
+function sleepLabel(hours) {
+  const n = Math.round(Number(hours) * 10) / 10;
+  return n === 1 ? "1 hour" : `${n} hours`;
+}
+
 function symptomLabel(id) {
   return SYMPTOMS.find((s) => s.id === id)?.label || id;
 }
@@ -322,6 +331,8 @@ function filteredEntries() {
   const cycleFrom = optionalFilterNumber("filterCycleFrom");
   const cycleTo = optionalFilterNumber("filterCycleTo");
   const minWater = optionalFilterNumber("filterWaterMin");
+  const maxSleep = optionalFilterNumber("filterSleepMax");
+  const minSleep = optionalFilterNumber("filterSleepMin");
   const foodQuery = $("filterFood").value.trim().toLowerCase();
   const symptoms = [...document.querySelectorAll("#filterSymptoms input:checked")].map((el) => el.value);
 
@@ -333,6 +344,8 @@ function filteredEntries() {
     if (cycleTo != null && (entry.cycleDay == null || entry.cycleDay > cycleTo)) return false;
     if (foodQuery && !(entry.food || "").toLowerCase().includes(foodQuery)) return false;
     if (minWater != null && (entry.waterAmount == null || entry.waterAmount < minWater)) return false;
+    if (maxSleep != null && (entry.sleepHours == null || entry.sleepHours > maxSleep)) return false;
+    if (minSleep != null && (entry.sleepHours == null || entry.sleepHours < minSleep)) return false;
     for (const key of ["caffeine", "foodColoring", "medication"]) {
       const want = state.filterTri[key];
       if (want != null && entry[key] !== want) return false;
@@ -344,6 +357,8 @@ function filteredEntries() {
 function clearFilters() {
   $("filterIntensityMin").value = "";
   $("filterHoursMin").value = "";
+  $("filterSleepMax").value = "";
+  $("filterSleepMin").value = "";
   $("filterCycleFrom").value = "";
   $("filterCycleTo").value = "";
   $("filterFood").value = "";
@@ -363,10 +378,15 @@ function renderPatterns() {
   const avg = rows.length
     ? (rows.reduce((sum, e) => sum + e.intensity, 0) / rows.length).toFixed(1)
     : "—";
+  const sleepRows = rows.filter((e) => e.sleepHours != null);
+  const avgSleep = sleepRows.length
+    ? (sleepRows.reduce((sum, e) => sum + Number(e.sleepHours), 0) / sleepRows.length).toFixed(1)
+    : "—";
   const withSymptoms = rows.filter((e) => e.symptoms?.length).length;
   $("monthStats").innerHTML = `
     <div><div class="stat-n">${rows.length}</div><div class="stat-l">Matching</div></div>
     <div><div class="stat-n">${avg}</div><div class="stat-l">Average pain</div></div>
+    <div><div class="stat-n">${avgSleep}</div><div class="stat-l">Average sleep</div></div>
     <div><div class="stat-n">${withSymptoms}</div><div class="stat-l">With symptoms</div></div>`;
   $("filterCount").textContent = monthEntries.length === rows.length
     ? `${rows.length} in your log`
@@ -403,7 +423,7 @@ function csvEscape(value) {
 function exportCsv() {
   const headers = [
     "Date", "Time", "Intensity", "Symptoms", "Symptom notes", "Duration (hours)",
-    "Day of cycle", "Food", "Water", "Water unit", "Caffeine", "Caffeine notes",
+    "Sleep (hours)", "Day of cycle", "Food", "Water", "Water unit", "Caffeine", "Caffeine notes",
     "Food coloring", "Coloring notes", "Medication", "Medication notes",
   ];
   const lines = [headers.join(",")];
@@ -415,6 +435,7 @@ function exportCsv() {
       (e.symptoms || []).map(symptomLabel).join("; "),
       e.symptomNotes,
       hoursFromMinutes(e.durationMinutes),
+      e.sleepHours,
       e.cycleDay,
       e.food,
       e.waterAmount,
@@ -443,6 +464,7 @@ function printSummary() {
       <td>${e.intensity}</td>
       <td>${(e.symptoms || []).map(symptomLabel).join(", ")}</td>
       <td>${e.durationMinutes ? durationLabel(e.durationMinutes) : ""}</td>
+      <td>${e.sleepHours != null ? sleepLabel(e.sleepHours) : ""}</td>
       <td>${e.cycleDay ?? ""}</td>
       <td>${e.food || ""}</td>
       <td>${e.waterAmount != null ? `${e.waterAmount} ${e.waterUnit || ""}` : ""}</td>
@@ -464,10 +486,10 @@ function printSummary() {
     <table>
       <thead><tr>
         <th>Date / time</th><th>Int.</th><th>Symptoms</th><th>Duration</th>
-        <th>Cycle</th><th>Food</th><th>Water</th><th>Caffeine</th>
+        <th>Sleep</th><th>Cycle</th><th>Food</th><th>Water</th><th>Caffeine</th>
         <th>Coloring</th><th>Medication</th>
       </tr></thead>
-      <tbody>${rows || "<tr><td colspan='10'>No entries yet</td></tr>"}</tbody>
+      <tbody>${rows || "<tr><td colspan='11'>No entries yet</td></tr>"}</tbody>
     </table>
     </body></html>`;
   const win = window.open("", "_blank");
@@ -595,6 +617,8 @@ function bindEvents() {
   [
     "filterIntensityMin",
     "filterHoursMin",
+    "filterSleepMax",
+    "filterSleepMin",
     "filterCycleFrom",
     "filterCycleTo",
     "filterFood",
