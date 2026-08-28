@@ -1,5 +1,5 @@
 // After you deploy family-data, set the Worker origin here (or window.FAMILY_DATA_URL).
-const PRODUCTION_API = "https://family-data.workers.dev";
+const PRODUCTION_API = "https://family-data.davidcasas.workers.dev";
 
 export function apiBase() {
   const override = window.FAMILY_DATA_URL;
