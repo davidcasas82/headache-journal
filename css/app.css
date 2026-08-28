@@ -251,7 +251,20 @@ textarea { resize: vertical; }
 }
 
 .row { display: flex; gap: 12px; }
-.row.two > * { flex: 1; }
+.row.two > * { flex: 1; min-width: 0; }
+.row.two input[type="date"],
+.row.two input[type="time"] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.row.datetime {
+  flex-direction: column;
+  gap: 14px;
+}
+@media (min-width: 540px) {
+  .row.datetime { flex-direction: row; }
+}
 .row.water { align-items: end; }
 .grow { flex: 1; }
 .field { display: block; margin-bottom: 14px; }
