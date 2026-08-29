@@ -69,11 +69,17 @@
           <div class="row two datetime">
             <label class="field">
               <span>Date</span>
-              <input type="date" id="occurredOn" required>
+              <span class="picker-shell">
+                <span class="picker-value" id="occurredOnLabel" aria-hidden="true"></span>
+                <input type="date" id="occurredOn" required>
+              </span>
             </label>
             <label class="field">
               <span>Time</span>
-              <input type="time" id="occurredAt">
+              <span class="picker-shell">
+                <span class="picker-value" id="occurredAtLabel" aria-hidden="true"></span>
+                <input type="time" id="occurredAt">
+              </span>
             </label>
           </div>
           <div class="field">

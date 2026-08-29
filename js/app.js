@@ -64,6 +64,42 @@ function fmtDate(iso) {
   });
 }
 
+function formatPickerDate(iso) {
+  if (!iso) return { text: "Choose a date", empty: true };
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return { text: "Choose a date", empty: true };
+  return {
+    text: new Date(y, m - 1, d).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    empty: false,
+  };
+}
+
+function formatPickerTime(hm) {
+  if (!hm) return { text: "Optional", empty: true };
+  const [h, min] = hm.split(":").map(Number);
+  if (!Number.isFinite(h) || !Number.isFinite(min)) return { text: "Optional", empty: true };
+  return {
+    text: new Date(2000, 0, 1, h, min).toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+    }),
+    empty: false,
+  };
+}
+
+function syncPickerLabels() {
+  const date = formatPickerDate($("occurredOn").value);
+  const time = formatPickerTime($("occurredAt").value);
+  $("occurredOnLabel").textContent = date.text;
+  $("occurredOnLabel").classList.toggle("is-placeholder", date.empty);
+  $("occurredAtLabel").textContent = time.text;
+  $("occurredAtLabel").classList.toggle("is-placeholder", time.empty);
+}
+
 function triLabel(n) {
   return n === 2 ? "Yes" : n === 1 ? "No" : "Unsure";
 }
@@ -200,6 +236,7 @@ function resetForm() {
   $("cancelEditBtn").hidden = true;
   $("pageTitle").textContent = state.view === "log" ? TITLES.log : TITLES[state.view];
   showError($("formError"), "");
+  syncPickerLabels();
 }
 
 function fillForm(entry) {
@@ -227,6 +264,7 @@ function fillForm(entry) {
   setTri("medication", entry.medication ?? 0);
   $("saveBtn").textContent = "Save changes";
   $("cancelEditBtn").hidden = false;
+  syncPickerLabels();
   showView("log");
   $("pageTitle").textContent = "Edit migraine";
 }
@@ -570,6 +608,10 @@ function bindEvents() {
   $("csvBtn").addEventListener("click", () => { closeMenu(); exportCsv(); });
   $("printBtn").addEventListener("click", () => { closeMenu(); printSummary(); });
   $("cancelEditBtn").addEventListener("click", resetForm);
+  $("occurredOn").addEventListener("input", syncPickerLabels);
+  $("occurredOn").addEventListener("change", syncPickerLabels);
+  $("occurredAt").addEventListener("input", syncPickerLabels);
+  $("occurredAt").addEventListener("change", syncPickerLabels);
 
   document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => showView(tab.dataset.view));
