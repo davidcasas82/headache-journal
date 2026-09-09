@@ -1,0 +1,213 @@
+body.parent {
+  background-image:
+    radial-gradient(1100px 560px at 6% -16%, rgba(139, 124, 246, 0.12), transparent 55%),
+    radial-gradient(900px 420px at 100% 0%, rgba(201, 160, 232, 0.08), transparent 52%);
+}
+
+body.parent .lock-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+body.parent .lock-card {
+  max-width: 460px;
+  text-align: left;
+}
+
+body.parent .lock-mark { margin-left: 0; }
+body.parent .lock-title { letter-spacing: -0.4px; }
+
+body.parent #appShell {
+  max-width: 1180px;
+  padding-bottom: 40px;
+}
+
+body.parent .parent-topbar {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+body.parent .parent-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+body.parent .refresh-meta {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-right: 6px;
+}
+
+body.parent .ghost-btn {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+body.parent .ghost-btn:hover,
+body.parent .ghost-btn:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent-2);
+}
+
+body.parent .parent-main {
+  padding: 20px 24px 0;
+}
+
+body.parent .banner {
+  margin-bottom: 14px;
+}
+
+body.parent .parent-stats {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: 16px;
+}
+
+body.parent .stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 14px;
+  box-shadow: var(--shadow-card);
+  text-align: left;
+}
+
+body.parent .parent-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+body.parent .parent-grid .card { margin-bottom: 0; }
+
+body.parent .parent-grid .bar-row {
+  grid-template-columns: minmax(92px, 140px) 1fr 28px;
+}
+
+body.parent .table-card { padding: 16px 16px 8px; }
+
+body.parent .table-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+body.parent .table-head .field-label { margin-bottom: 4px; }
+body.parent .table-head .filter-count {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+body.parent .parent-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 14px;
+  margin-bottom: 14px;
+}
+
+body.parent .parent-filters .field {
+  margin-bottom: 0;
+  min-width: 140px;
+}
+
+body.parent .parent-filters .field.grow { min-width: 220px; flex: 1; }
+
+body.parent .parent-filters input[type="date"] {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+}
+
+body.parent .filter-row { margin-bottom: 0; }
+body.parent .filter-row .check-pill { flex: 0 1 auto; min-height: 40px; }
+
+body.parent .table-wrap {
+  overflow-x: auto;
+  margin: 0 -4px 8px;
+}
+
+body.parent .entry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+body.parent .entry-table th,
+body.parent .entry-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+body.parent .entry-table th {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+body.parent .entry-table tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+body.parent .entry-table .empty-cell {
+  text-align: center;
+  color: var(--text-2);
+  padding: 28px 12px;
+}
+
+body.parent .notes {
+  display: block;
+  color: var(--text-3);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+body.parent .int-cell { font-weight: 750; }
+
+@media (max-width: 900px) {
+  body.parent .parent-stats { grid-template-columns: repeat(2, 1fr); }
+  body.parent .parent-grid { grid-template-columns: 1fr; }
+  body.parent .parent-topbar,
+  body.parent .parent-main { padding-left: 16px; padding-right: 16px; }
+}
+
+@media print {
+  body.parent #lockScreen,
+  body.parent .parent-actions,
+  body.parent .parent-filters,
+  body.parent .table-head .text-btn { display: none !important; }
+  body.parent { background: #fff; color: #111; }
+  body.parent .card,
+  body.parent .stat-card {
+    box-shadow: none;
+    border-color: #ddd;
+    background: #fff;
+  }
+}
